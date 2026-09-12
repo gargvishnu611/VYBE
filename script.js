@@ -40,10 +40,10 @@
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
     await loadScript('vybe-backend.js');
     await loadScript('production-mode.js');
-    // app.js remains the visual shell. The production runtime binds over it
-    // with real published audio/catalogue behaviour after the shell is ready.
-    setTimeout(() => loadScript('live-player.js'), 700);
-    setTimeout(() => { try { hidePreloader(); } catch (_) {} }, 1200);
+    await loadScript('live-player.js');
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await loadScript('production-polish.js');
+    setTimeout(() => { try { hidePreloader(); } catch (_) {} }, 500);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
