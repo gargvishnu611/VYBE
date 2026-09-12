@@ -1,0 +1,11 @@
+{
+  "name":"VYBE — Music in Motion",
+  "short_name":"VYBE",
+  "description":"An immersive music universe where sound, lyrics, motion and depth become one experience.",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#07070a",
+  "theme_color":"#08080c",
+  "orientation":"any",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
