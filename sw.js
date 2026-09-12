@@ -1,4 +1,4 @@
-const CACHE='vybe-v7';
+const CACHE='vybe-v8';
 const CORE=['./','./index.html','./style.css','./script.js','./app.js','./production-mode.js','./live-player.js','./vybe-config.js','./vybe-backend.js','./manifest.json','./icon.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('vybe-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
