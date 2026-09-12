@@ -1,10 +1,10 @@
 /* VYBE — production presentation layer
-   Removes placeholder/demo presentation, improves mobile/desktop polish,
-   and keeps the public experience focused on published catalogue content.
+   Removes placeholder presentation and keeps the public interface focused on
+   published catalogue content. No runtime watcher is used, keeping the page light.
 */
 (() => {
   const $ = (id) => document.getElementById(id);
-  const clean = (value) => String(value || '').replace(/\s*·\s*Demo\b/gi, '').replace(/\bDemo\b/gi, '').replace(/\bDEMO\b/g, '').replace(/\s{2,}/g, ' ').trim();
+  const clean = (value) => String(value || '').replace(/\s*·\s*Demo\b/gi, '').replace(/\bDemo\b/gi, '').replace(/\s{2,}/g, ' ').trim();
 
   window.VYBE_PRODUCTION = true;
   document.documentElement.dataset.vybeProduction = 'true';
@@ -12,7 +12,6 @@
   const style = document.createElement('style');
   style.id = 'vybeProductionStyles';
   style.textContent = `
-    html[data-vybe-production="true"] .live-catalogue-grid:empty{display:none}
     html[data-vybe-production="true"] .player-bar{backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
     html[data-vybe-production="true"] .track-card{content-visibility:auto;contain-intrinsic-size:360px 430px}
     html[data-vybe-production="true"] #liveEmptyState{display:flex;min-height:180px;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:rgba(255,255,255,.02);margin-top:18px;padding:28px}
@@ -43,7 +42,9 @@
       ['LIVE RADAR · DEMO DATA', 'CURATED CATALOGUE'],
       ['TOUCH / MOVE', 'MOVE / EXPLORE'],
       ['3D / REALTIME', 'LIVE VISUALS'],
-      ['TOUCH + POINTER + SOUND', 'POINTER + TOUCH']
+      ['TOUCH + POINTER + SOUND', 'POINTER + TOUCH'],
+      ['Motion mode', 'Visual effects'],
+      ['MAKE THE SCREEN YOURS.', 'SET YOUR VIEW.']
     ]);
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const nodes = [];
@@ -51,44 +52,41 @@
     nodes.forEach((node) => {
       let text = node.nodeValue || '';
       replacements.forEach((to, from) => { text = text.replaceAll(from, to); });
-      node.nodeValue = text;
+      if (text !== node.nodeValue) node.nodeValue = text;
     });
   }
 
-  function hideFakeArtists() {
-    const stage = document.querySelector('.artist-stage');
-    if (!stage) return;
-    stage.querySelectorAll('.artist-card').forEach((card) => card.setAttribute('data-placeholder-hidden', 'true'));
-    stage.dataset.placeholdersHidden = 'true';
-  }
-
-  function showEmptyCatalogue(message = 'The catalogue is being curated.') {
+  function resetPlaceholderState() {
+    $('heroTrack')?.replaceChildren(document.createTextNode('VYBE'));
+    $('heroArtist')?.replaceChildren(document.createTextNode('Curated releases'));
+    $('heroEnergy')?.replaceChildren(document.createTextNode('—'));
+    $('heroMood')?.replaceChildren(document.createTextNode('Explore'));
+    $('albumTitle')?.replaceChildren(document.createTextNode('VYBE'));
+    $('albumBpm')?.replaceChildren(document.createTextNode('VYBE'));
+    $('albumNumber')?.replaceChildren(document.createTextNode('—'));
+    $('sceneTrack')?.replaceChildren(document.createTextNode('VYBE'));
+    $('sceneMood')?.replaceChildren(document.createTextNode('EXPLORE'));
+    $('lyricsTrackName')?.replaceChildren(document.createTextNode('SELECT A RELEASE'));
+    $('lyricsDuration')?.replaceChildren(document.createTextNode('—'));
+    $('lyricClock')?.replaceChildren(document.createTextNode('0:00'));
+    const copy = $('lyricsCopy');
+    if (copy) copy.innerHTML = '<p class="lyric-line active" data-time="0">Choose a published release to begin.</p>';
     const grid = $('trackGrid');
-    if (!grid || $('liveEmptyState')) return;
-    grid.innerHTML = '';
-    const empty = document.createElement('div');
-    empty.id = 'liveEmptyState';
-    empty.innerHTML = '<div><strong>VYBE is live.</strong><span>' + message + '<br>New releases appear here as they are approved.</span></div>';
-    grid.appendChild(empty);
+    if (grid) grid.innerHTML = '<div id="liveEmptyState"><div><strong>VYBE is live.</strong><span>Published releases appear here after they are approved.</span></div></div>';
     $('playerBar')?.setAttribute('data-placeholder-hidden', 'true');
     $('playerBar')?.style.setProperty('display', 'none');
   }
 
-  function observe() {
-    const observer = new MutationObserver(() => {
-      cleanTextNodes(document.body);
-      renameLabels();
-      if (!window.__VYBE_LIVE_READY) hideFakeArtists();
-    });
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  function hidePlaceholderArtists() {
+    document.querySelectorAll('.artist-stage .artist-card').forEach((card) => card.setAttribute('data-placeholder-hidden', 'true'));
   }
 
   function init() {
     cleanTextNodes(document.body);
     renameLabels();
-    hideFakeArtists();
-    observe();
-    window.VYBE_PRODUCTION_UI = { cleanTextNodes, renameLabels, showEmptyCatalogue, hideFakeArtists };
+    resetPlaceholderState();
+    hidePlaceholderArtists();
+    window.VYBE_PRODUCTION_UI = { cleanTextNodes, renameLabels, hidePlaceholderArtists };
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
