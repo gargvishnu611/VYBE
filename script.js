@@ -1,6 +1,6 @@
 /* VYBE — production bootstrap
-   Loads the public configuration/backend, then the production catalogue/audio layer.
-   Keeps startup fail-safe so the visual shell still renders if a remote service fails.
+   Loads the public configuration/backend, then the live catalogue/audio layer and
+   one lightweight presentation/performance layer.
 */
 (() => {
   const hidePreloader = () => {
@@ -39,9 +39,7 @@
     await loadScript('vybe-config.js');
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
     await loadScript('vybe-backend.js');
-    await loadScript('production-mode.js');
     await loadScript('live-player.js');
-    await new Promise((resolve) => setTimeout(resolve, 250));
     await loadScript('production-polish.js');
     setTimeout(() => { try { hidePreloader(); } catch (_) {} }, 500);
   }
