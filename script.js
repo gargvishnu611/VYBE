@@ -1,5 +1,6 @@
-/* VYBE — fail-safe bootstrap + backend + real audio loader
-   Loads public Supabase configuration/backend first, then activates the real audio engine.
+/* VYBE — production bootstrap
+   Loads the public configuration/backend, then the production catalogue/audio layer.
+   Keeps startup fail-safe so the visual shell still renders if a remote service fails.
 */
 (() => {
   const hidePreloader = () => {
@@ -18,10 +19,11 @@
 
   const loadScript = (src) => new Promise((resolve) => {
     const full = new URL(src, document.baseURI).href;
-    const existing = [...document.scripts].find(s => s.src === full);
+    const existing = [...document.scripts].find((s) => s.src === full);
     if (existing) {
       if (existing.dataset.loaded === 'true') return resolve(true);
       existing.addEventListener('load', () => resolve(true), { once: true });
+      existing.addEventListener('error', () => resolve(false), { once: true });
       return;
     }
     const s = document.createElement('script');
@@ -32,16 +34,17 @@
     document.head.appendChild(s);
   });
 
-  const boot = async () => {
+  async function boot() {
     try { hidePreloader(); } catch (_) {}
-    try { await loadScript('vybe-config.js'); } catch (_) {}
-    try { await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'); } catch (_) {}
-    try { await loadScript('vybe-backend.js'); } catch (_) {}
-    // app.js is already loaded by index.html. Give it time to bind its UI,
-    // then install the real HTML5 audio engine on top of the demo player.
-    setTimeout(() => loadScript('audio-engine.js'), 1200);
-    setTimeout(() => { try { hidePreloader(); } catch (_) {} }, 1400);
-  };
+    await loadScript('vybe-config.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+    await loadScript('vybe-backend.js');
+    await loadScript('production-mode.js');
+    // app.js remains the visual shell. The production runtime binds over it
+    // with real published audio/catalogue behaviour after the shell is ready.
+    setTimeout(() => loadScript('live-player.js'), 700);
+    setTimeout(() => { try { hidePreloader(); } catch (_) {} }, 1200);
+  }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
