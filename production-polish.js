@@ -15,11 +15,11 @@
   style.id = 'vybeProductionPolish';
   style.textContent = `
     html[data-vybe-touch="true"] .cursor,html[data-vybe-touch="true"] .cursor-label{display:none!important}
-    html[data-vybe-low-power="true"] #space{opacity:.28!important}
-    html[data-vybe-low-power="true"] .grain{opacity:.16!important}
-    html[data-vybe-low-power="true"] .world-grid,html[data-vybe-low-power="true"] .lab-grid{opacity:.32!important}
+    html[data-vybe-low-power="true"] #space{opacity:.22!important}
+    html[data-vybe-low-power="true"] .grain{opacity:.12!important}
+    html[data-vybe-low-power="true"] .world-grid,html[data-vybe-low-power="true"] .lab-grid{opacity:.26!important}
     html[data-vybe-production="true"] .track-card{contain:layout paint;}
-    html[data-vybe-production="true"] .visual-lab,.visual-section,.immersive-player,.hero-world{contain:layout paint;}
+    html[data-vybe-production="true"] .visual-lab,html[data-vybe-production="true"] .visual-section,html[data-vybe-production="true"] .immersive-player,html[data-vybe-production="true"] .hero-world{contain:layout paint;}
     html[data-vybe-production="true"] .artist-stage:empty{display:none!important}
     html[data-vybe-production="true"] .hide-public-placeholder{display:none!important}
     @media(max-width:760px){
@@ -38,8 +38,8 @@
       .hero{min-height:760px!important}
       .immersive-player{min-height:760px!important}
     }
-    @media(prefers-reduced-motion:reduce), (max-width:760px) and (prefers-reduced-motion:no-preference){
-      html[data-vybe-low-power="true"] *,html[data-vybe-low-power="true"] *::before,html[data-vybe-low-power="true"] *::after{animation-duration:.001ms!important;transition-duration:.08s!important}
+    @media(prefers-reduced-motion:reduce){
+      html[data-vybe-production="true"] *,html[data-vybe-production="true"] *::before,html[data-vybe-production="true"] *::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
     }
   `;
   document.head.appendChild(style);
@@ -58,6 +58,7 @@
     ['A music experience.', 'A world for every song.']
   ]);
   const banned = /\b(Demo|DEMO)\b/g;
+  let scheduled = false;
 
   function cleanText(root = document.body){
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -87,27 +88,34 @@
     const grid=document.getElementById('trackGrid');
     if(!grid) return;
     const cards=grid.querySelectorAll('.track-card');
-    const text=(grid.textContent||'').toLowerCase();
-    if(!cards.length && !document.getElementById('liveEmptyState') && !text.includes('no releases')){
+    if(!cards.length && !document.getElementById('liveEmptyState')){
       grid.innerHTML='<div id="liveEmptyState"><div><strong>VYBE is live.</strong><span>New releases appear here after they are approved.</span></div></div>';
     }
   }
 
-  function init(){
+  function apply(){
+    scheduled=false;
     cleanText();
     hideTechnicalCopy();
     protectEmptyLiveState();
-    if(isTouch || saveData || lowMemory){
-      document.documentElement.classList.add('vybe-light-render');
-      if(smallScreen){
-        const space=document.getElementById('space');
-        if(space) space.style.opacity='0.22';
-      }
-    }
-    window.VYBE_PRODUCTION_POLISH={cleanText,hideTechnicalCopy,protectEmptyLiveState};
+    if(isTouch || saveData || lowMemory) document.documentElement.classList.add('vybe-light-render');
+  }
+
+  function scheduleApply(){
+    if(scheduled) return;
+    scheduled=true;
+    requestAnimationFrame(apply);
+  }
+
+  function init(){
+    apply();
+    window.VYBE_PRODUCTION_POLISH={cleanText,hideTechnicalCopy,protectEmptyLiveState,apply};
+    const observer=new MutationObserver((records)=>{
+      const meaningful=records.some(r=>[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1 || n.nodeType===3) || r.type==='characterData');
+      if(meaningful) scheduleApply();
+    });
+    observer.observe(document.body,{subtree:true,childList:true,characterData:true});
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
-  const observer=new MutationObserver(()=>{cleanText();hideTechnicalCopy();protectEmptyLiveState();});
-  observer.observe(document.body,{subtree:true,childList:true,characterData:true});
 })();
