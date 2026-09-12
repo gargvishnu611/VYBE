@@ -71,8 +71,13 @@
     $('lyricClock')?.replaceChildren(document.createTextNode('0:00'));
     const copy = $('lyricsCopy');
     if (copy) copy.innerHTML = '<p class="lyric-line active" data-time="0">Choose a published release to begin.</p>';
+    showEmptyCatalogue('Published releases appear here after they are approved.');
+  }
+
+  function showEmptyCatalogue(message) {
     const grid = $('trackGrid');
-    if (grid) grid.innerHTML = '<div id="liveEmptyState"><div><strong>VYBE is live.</strong><span>Published releases appear here after they are approved.</span></div></div>';
+    if (!grid) return;
+    grid.innerHTML = `<div id="liveEmptyState"><div><strong>VYBE is live.</strong><span>${clean(message || 'Published releases appear here after they are approved.')}</span></div></div>`;
     $('playerBar')?.setAttribute('data-placeholder-hidden', 'true');
     $('playerBar')?.style.setProperty('display', 'none');
   }
@@ -86,7 +91,7 @@
     renameLabels();
     resetPlaceholderState();
     hidePlaceholderArtists();
-    window.VYBE_PRODUCTION_UI = { cleanTextNodes, renameLabels, hidePlaceholderArtists };
+    window.VYBE_PRODUCTION_UI = { cleanTextNodes, renameLabels, hidePlaceholderArtists, showEmptyCatalogue };
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
