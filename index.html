@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VYBE — Music in Motion</title>
+  <meta name="description" content="VYBE is an immersive music discovery experience with animated lyrics, 3D visuals and motion-driven interaction.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div>
+  <header class="nav">
+    <a class="brand" href="#">VYBE<span>•</span></a>
+    <nav>
+      <button data-scroll="#trending">Discover</button>
+      <button data-scroll="#lyrics">Lyrics</button>
+      <button data-scroll="#visuals">Visuals</button>
+    </nav>
+    <button id="searchButton" class="icon-button" aria-label="Search">⌕</button>
+  </header>
+
+  <main>
+    <section class="hero" id="stage">
+      <div class="hero-copy">
+        <p class="eyebrow">MUSIC IN MOTION</p>
+        <h1>Hear it.<br><span>See it.</span><br>Feel it.</h1>
+        <p class="subcopy">A visual music universe built around sound, lyrics, depth and motion.</p>
+        <div class="hero-actions">
+          <button id="experienceButton" class="primary">Start the experience <span>↗</span></button>
+          <button id="exploreButton" class="ghost">Explore trending</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="halo"></div>
+        <div class="album-wrap" id="albumWrap">
+          <div class="album" id="album">
+            <div class="album-face">
+              <span class="tiny">VYBE / 001</span>
+              <strong>NEON<br>AFTER<br>DARK</strong>
+              <span class="wave">〰〰〰</span>
+              <span class="tiny bottom">MUSIC IN MOTION</span>
+            </div>
+          </div>
+        </div>
+        <div class="floating-card card-one"><small>NOW PLAYING</small><strong id="stageTitle">Night Drive</strong><span id="stageArtist">VYBE Radio · Demo</span></div>
+        <div class="floating-card card-two"><small>ENERGY</small><strong>108 BPM</strong><span>Dreamy / Night</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="trending">
+      <div class="section-head"><div><p class="eyebrow">DISCOVER</p><h2>Trending now</h2></div><span class="muted">India · Global · Your vibe</span></div>
+      <div class="track-grid">
+        <button class="track-card selected" data-index="0"><span class="index">01</span><div class="mini-art art-a"></div><span><strong>Night Drive</strong><small>VYBE Radio · Demo</small></span><em>108</em></button>
+        <button class="track-card" data-index="1"><span class="index">02</span><div class="mini-art art-b"></div><span><strong>Afterglow</strong><small>VYBE Radio · Demo</small></span><em>96</em></button>
+        <button class="track-card" data-index="2"><span class="index">03</span><div class="mini-art art-c"></div><span><strong>Midnight Rain</strong><small>VYBE Radio · Demo</small></span><em>82</em></button>
+        <button class="track-card" data-index="3"><span class="index">04</span><div class="mini-art art-d"></div><span><strong>Neon Hearts</strong><small>VYBE Radio · Demo</small></span><em>124</em></button>
+      </div>
+    </section>
+
+    <section class="split section" id="lyrics">
+      <div class="lyrics-panel">
+        <div class="section-head"><div><p class="eyebrow">KINETIC LYRICS</p><h2>Words that move.</h2></div><span id="lyricClock" class="muted">0:00</span></div>
+        <div class="lyrics-list">
+          <p class="lyric-line active">City lights are breathing slow</p>
+          <p class="lyric-line">We disappear where neon glows</p>
+          <p class="lyric-line">Every second pulls me closer</p>
+          <p class="lyric-line">Lose the world and find the motion</p>
+          <p class="lyric-line">Midnight turns the silence gold</p>
+          <p class="lyric-line">Stay inside this afterglow</p>
+        </div>
+        <div class="lyrics-meter"><span id="lyricsProgress"></span></div>
+      </div>
+      <div class="visual-stack" id="visuals">
+        <div class="mesh"></div><div class="line line-1"></div><div class="line line-2"></div><div class="line line-3"></div>
+        <div class="visual-caption"><small>VISUAL WORLD</small><strong>Each song<br>gets a pulse.</strong></div>
+      </div>
+    </section>
+
+    <section class="section manifesto">
+      <p class="eyebrow">THE VYBE IDEA</p>
+      <h2>Not a music library.<br><span>A music experience.</span></h2>
+      <p>Sound, lyrics and 3D motion become one interface — designed to make discovery feel cinematic.</p>
+    </section>
+  </main>
+
+  <div class="player" id="player">
+    <div class="player-track"><div class="player-art"></div><div><strong id="playerTitle">Night Drive</strong><span id="playerArtist">VYBE Radio · Demo</span></div></div>
+    <div class="player-controls"><button id="prevButton">◀</button><button id="playButton" class="play" aria-label="Play">▶</button><button id="nextButton">▶</button></div>
+    <div class="player-progress"><span id="currentTime">0:00</span><input id="progress" type="range" min="0" max="100" value="0"><span id="duration">0:30</span></div>
+    <button id="muteButton" class="volume">VOL</button><button id="shuffleButton" class="volume">SHUFFLE</button>
+  </div>
+
+  <div class="search-modal" id="searchModal" aria-hidden="true"><div class="search-box"><div class="search-top"><strong>Search VYBE</strong><button id="closeSearch">×</button></div><input id="searchInput" placeholder="Search songs or artists…" autocomplete="off"><div id="searchResults"></div></div></div>
+  <script src="script.js"></script>
+</body>
+</html>
