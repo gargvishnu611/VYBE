@@ -8,6 +8,8 @@
   const saveData = !!navigator.connection?.saveData;
   const lowMemory = Number(navigator.deviceMemory || 8) <= 4;
 
+  window.VYBE_PRODUCTION = true;
+  document.documentElement.dataset.vybeProduction = 'true';
   document.documentElement.dataset.vybeTouch = isTouch ? 'true' : 'false';
   document.documentElement.dataset.vybeLowPower = (saveData || lowMemory) ? 'true' : 'false';
 
@@ -99,6 +101,10 @@
     hideTechnicalCopy();
     protectEmptyLiveState();
     if(isTouch || saveData || lowMemory) document.documentElement.classList.add('vybe-light-render');
+    if(smallScreen){
+      const space=document.getElementById('space');
+      if(space && (saveData || lowMemory)) space.style.opacity='.18';
+    }
   }
 
   function scheduleApply(){
