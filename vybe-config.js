@@ -4,8 +4,8 @@
    Never put a Supabase service_role key here.
 */
 window.VYBE_CONFIG = window.VYBE_CONFIG || {
-  supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabaseUrl: 'https://ilbwosnlobkxvlepcxha.supabase.co',
+  supabaseAnonKey: 'sb_publishable_5MU9N1ki78vy-uvEiTTkdA_YRCI8_0j',
   musicBucket: 'music',
   artworkBucket: 'artwork',
   artistAssetsBucket: 'artist-assets'
