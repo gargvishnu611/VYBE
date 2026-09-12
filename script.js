@@ -1,7 +1,5 @@
-/* VYBE — fail-safe bootstrap + backend loader
-   The visual runtime stays in app.js. This file also loads the optional
-   Supabase client, public configuration and VYBE backend bridge after the
-   main runtime script so the existing experience keeps booting safely.
+/* VYBE — fail-safe bootstrap + backend + real audio loader
+   Loads public Supabase configuration/backend first, then activates the real audio engine.
 */
 (() => {
   const hidePreloader = () => {
@@ -19,23 +17,29 @@
   };
 
   const loadScript = (src) => new Promise((resolve) => {
-    const existing = [...document.scripts].find(s => s.src === new URL(src, document.baseURI).href);
-    if (existing) return existing.addEventListener('load', resolve, { once: true });
-    const s = document.createElement('script'); s.src = src; s.async = true;
-    s.onload = () => resolve(true); s.onerror = () => resolve(false); document.head.appendChild(s);
+    const full = new URL(src, document.baseURI).href;
+    const existing = [...document.scripts].find(s => s.src === full);
+    if (existing) {
+      if (existing.dataset.loaded === 'true') return resolve(true);
+      existing.addEventListener('load', () => resolve(true), { once: true });
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = () => { s.dataset.loaded = 'true'; resolve(true); };
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
   });
 
-  const loadBackend = async () => {
-    try {
-      await loadScript('vybe-config.js');
-      await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-      await loadScript('vybe-backend.js');
-    } catch (_) {}
-  };
-
-  const boot = () => {
+  const boot = async () => {
     try { hidePreloader(); } catch (_) {}
-    loadBackend();
+    try { await loadScript('vybe-config.js'); } catch (_) {}
+    try { await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'); } catch (_) {}
+    try { await loadScript('vybe-backend.js'); } catch (_) {}
+    // app.js is already loaded by index.html. Give it time to bind its UI,
+    // then install the real HTML5 audio engine on top of the demo player.
+    setTimeout(() => loadScript('audio-engine.js'), 1200);
     setTimeout(() => { try { hidePreloader(); } catch (_) {} }, 1400);
   };
 
